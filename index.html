@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>차오름학원</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -11,26 +11,35 @@
 <meta name="apple-mobile-web-app-title" content="차오름">
 <meta name="theme-color" content="#b8352e">
 <style>
-:root { --bg: #fbf6f1; --paper: #fff; --ink: #2a1d1a; --muted: #7a6a64; --brand: #b8352e; --soft: #fde9e5; }
-@media (prefers-color-scheme: dark) { :root { --bg: #1a1413; --paper: #241c1a; --ink: #f3e9e5; --muted: #b3a29b; --brand: #f0675d; --soft: #3c2421; } }
+:root { --bg: #fbf6f1; --paper: #fff; --ink: #2a1d1a; --muted: #7a6a64; --brand: #b8352e; --line: #eee1d8; }
+@media (prefers-color-scheme: dark) { :root { --bg: #1a1413; --paper: #241c1a; --ink: #f3e9e5; --muted: #b3a29b; --brand: #f0675d; --line: #3b2f2c; } }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif; }
-main { max-width: 480px; margin: 0 auto; padding: 28px 16px 48px; display: grid; gap: 16px; text-align: center; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.6 "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif; }
+[hidden] { display: none !important; }
+/* 처음 한 번 보이는 설치 안내 */
+#intro { max-width: 480px; margin: 0 auto; padding: 28px 16px 48px; display: grid; gap: 16px; text-align: center; }
 img.icon { width: 112px; height: 112px; border-radius: 26px; margin: 0 auto; box-shadow: 0 8px 24px rgba(120, 50, 30, .25); }
 h1 { margin: 0; font-size: 1.6rem; }
-.go { display: block; padding: 16px; border-radius: 16px; background: var(--brand); color: #fff; font-weight: 800; font-size: 1.1rem; text-decoration: none; }
+.go { display: block; width: 100%; padding: 16px; border: 0; border-radius: 16px; background: var(--brand); color: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; }
 .card { background: var(--paper); border-radius: 18px; padding: 16px; text-align: left; box-shadow: 0 6px 20px rgba(120, 50, 30, .08); }
 .card h2 { margin: 0 0 6px; font-size: 1.05rem; color: var(--brand); }
 .card ol { margin: 0; padding-left: 20px; }
 .card p { margin: 8px 0 0; color: var(--muted); font-size: .9rem; }
+/* 앱 화면: 위 막대 + 차오름 앱 */
+#app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+.bar { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(env(safe-area-inset-top) + 6px) 12px 6px; background: var(--brand); color: #fff; }
+.bar b { font-size: 1.05rem; flex: 1; }
+.bar button { font: inherit; font-weight: 700; border: 0; border-radius: 10px; padding: 6px 12px; background: rgba(255, 255, 255, .2); color: #fff; cursor: pointer; }
+#frame { flex: 1; width: 100%; border: 0; background: var(--bg); }
 </style>
 </head>
 <body>
-<main>
+<div id="intro" hidden>
   <img class="icon" src="icon-192.png" alt="">
   <h1>차오름학원</h1>
-  <a class="go" id="go" href="#">앱 열기</a>
-  <div class="card" id="addHelp">
+  <button class="go" id="open" type="button">앱 열기</button>
+  <div class="card">
     <h2>휴대폰 바탕화면에 추가하기</h2>
     <p><b>아이폰 (Safari)</b></p>
     <ol><li>아래쪽 공유 버튼(□↑)을 눌러요</li><li>‘홈 화면에 추가’를 눌러요</li></ol>
@@ -38,18 +47,44 @@ h1 { margin: 0; font-size: 1.6rem; }
     <ol><li>메뉴(⋮ 또는 ☰)를 눌러요</li><li>‘홈 화면에 추가’를 눌러요</li></ol>
     <p>카카오톡 안에서 열었다면 먼저 ‘다른 브라우저로 열기’를 눌러 주세요.</p>
   </div>
-</main>
+</div>
+<div id="app" hidden>
+  <div class="bar"><b id="title">차오름학원</b><button type="button" id="home" hidden>‹ 처음으로</button></div>
+  <iframe id="frame" title="차오름학원 앱" allow="camera; clipboard-write"></iframe>
+</div>
 <script>
-// 학생용 앱(OMR 채점·재시험) 주소
-var APP = 'https://script.google.com/macros/s/AKfycby6wevH_4gLeDjdg3YTxjlE85Xf26Z8GayVvH4tvjqTacKxgBvPrCWRDm7wwlZsMAuQ/exec?p=home';
-document.getElementById('go').href = APP;
-// 바탕화면 아이콘으로 열었으면 바로 앱으로 이동(앱 화면에서 바탕화면 추가 안내를 숨기도록 from=app 표시)
+// 차오름 앱(구글 웹앱). 이 페이지 안에 넣어 보여 주면 구글 안내 줄이 나오지 않는다.
+var BASE = 'https://script.google.com/macros/s/AKfycby6wevH_4gLeDjdg3YTxjlE85Xf26Z8GayVvH4tvjqTacKxgBvPrCWRDm7wwlZsMAuQ/exec';
+var TITLES = { home: '차오름학원', scan: '채점하기', practice: '매일 학습', photo: '사진 올리기' };
+function show(page, id) {
+  if (!TITLES[page]) page = 'home';
+  var url = BASE + (page === 'scan' ? '?' : '?p=' + page + '&') + 'embed=1&from=app' + (id && /^\d{5}$/.test(id) ? '&id=' + id : '');
+  document.getElementById('intro').hidden = true;
+  document.getElementById('app').hidden = false;
+  document.getElementById('title').textContent = TITLES[page];
+  document.getElementById('home').hidden = page === 'home';
+  document.getElementById('frame').src = url;
+}
+document.getElementById('home').onclick = function () { show('home'); };
+document.getElementById('open').onclick = function () { show('home'); };
+// 앱 안의 메뉴를 누르면 앱이 알려 준다 → 이 페이지 안에서 화면을 바꾼다
+window.addEventListener('message', function (e) {
+  var d = e.data;
+  var host = ''; try { host = new URL(e.origin).hostname; } catch (err) {}
+  if (!d || d.chaoreum !== 'go' || !/\.googleusercontent\.com$/.test(host)) return;
+  show(d.page, d.id);
+});
+// 처음 한 번만 설치 안내를 보여 주고, 그다음부터(바탕화면 아이콘 등)는 바로 앱을 연다
 var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
-if (standalone || /[?&]app=1\b/.test(location.search)) {
-  try { localStorage.setItem('chaoreumApp', '1'); } catch (e) {}
-  location.replace(APP + '&from=app');
+var seen = false, thisVisit = false;
+try { seen = localStorage.getItem('chaoreumSeen') === '1'; thisVisit = sessionStorage.getItem('chaoreumVisit') === '1'; } catch (e) {}
+var marked = /[?&]app=1\b/.test(location.search) || /[#&]i=1\b/.test(location.hash);
+if (!thisVisit && (standalone || marked || seen)) {
+  show('home');
 } else {
-  try { if (localStorage.getItem('chaoreumApp') === '1') document.getElementById('addHelp').hidden = true; } catch (e) {}
+  try { localStorage.setItem('chaoreumSeen', '1'); sessionStorage.setItem('chaoreumVisit', '1'); } catch (e) {}
+  history.replaceState(null, '', location.pathname + '#i=1');
+  document.getElementById('intro').hidden = false;
 }
 </script>
 </body>
