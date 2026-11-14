@@ -30,7 +30,7 @@ h1 { margin: 0; font-size: 1.6rem; }
   <img class="icon" src="icon-192.png" alt="">
   <h1>차오름학원</h1>
   <a class="go" id="go" href="#">앱 열기</a>
-  <div class="card">
+  <div class="card" id="addHelp">
     <h2>휴대폰 바탕화면에 추가하기</h2>
     <p><b>아이폰 (Safari)</b></p>
     <ol><li>아래쪽 공유 버튼(□↑)을 눌러요</li><li>‘홈 화면에 추가’를 눌러요</li></ol>
@@ -43,9 +43,14 @@ h1 { margin: 0; font-size: 1.6rem; }
 // 학생용 앱(OMR 채점·재시험) 주소
 var APP = 'https://script.google.com/macros/s/AKfycby6wevH_4gLeDjdg3YTxjlE85Xf26Z8GayVvH4tvjqTacKxgBvPrCWRDm7wwlZsMAuQ/exec?p=home';
 document.getElementById('go').href = APP;
-// 바탕화면 아이콘으로 열었으면 바로 앱으로 이동
+// 바탕화면 아이콘으로 열었으면 바로 앱으로 이동(앱 화면에서 바탕화면 추가 안내를 숨기도록 from=app 표시)
 var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
-if (standalone || /[?&]app=1\b/.test(location.search)) location.replace(APP);
+if (standalone || /[?&]app=1\b/.test(location.search)) {
+  try { localStorage.setItem('chaoreumApp', '1'); } catch (e) {}
+  location.replace(APP + '&from=app');
+} else {
+  try { if (localStorage.getItem('chaoreumApp') === '1') document.getElementById('addHelp').hidden = true; } catch (e) {}
+}
 </script>
 </body>
 </html>
