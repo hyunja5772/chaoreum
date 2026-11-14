@@ -31,7 +31,7 @@ h1 { margin: 0; font-size: 1.6rem; }
 .bar { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(env(safe-area-inset-top) + 6px) 12px 6px; background: var(--brand); color: #fff; }
 .bar b { font-size: 1.05rem; flex: 1; }
 .bar button { font: inherit; font-weight: 700; border: 0; border-radius: 10px; padding: 6px 12px; background: rgba(255, 255, 255, .2); color: #fff; cursor: pointer; }
-#frame { flex: 1; width: 100%; border: 0; background: var(--bg); }
+.frame { flex: 1; width: 100%; border: 0; background: var(--bg); }
 </style>
 </head>
 <body>
@@ -50,20 +50,34 @@ h1 { margin: 0; font-size: 1.6rem; }
 </div>
 <div id="app" hidden>
   <div class="bar"><b id="title">차오름학원</b><button type="button" id="home" hidden>‹ 처음으로</button></div>
-  <iframe id="frame" title="차오름학원 앱" allow="camera; clipboard-write"></iframe>
+
 </div>
 <script>
 // 차오름 앱(구글 웹앱). 이 페이지 안에 넣어 보여 주면 구글 안내 줄이 나오지 않는다.
 var BASE = 'https://script.google.com/macros/s/AKfycby6wevH_4gLeDjdg3YTxjlE85Xf26Z8GayVvH4tvjqTacKxgBvPrCWRDm7wwlZsMAuQ/exec';
 var TITLES = { home: '차오름학원', scan: '채점하기', practice: '매일 학습', photo: '사진 올리기' };
+// 속도: 한 번 연 화면은 다시 만들지 않고 숨겨 두었다가 다시 보여 준다. 채점하기는 미리 불러 둔다.
+var frames = {};
+function frameFor(page, id) {
+  var k = page + (page === 'practice' && id ? ':' + id : '');
+  if (!frames[k]) {
+    var url = BASE + (page === 'scan' ? '?' : '?p=' + page + '&') + 'embed=1&from=app' + (id && /^\d{5}$/.test(id) ? '&id=' + id : '');
+    var f = document.createElement('iframe');
+    f.className = 'frame'; f.title = TITLES[page]; f.setAttribute('allow', 'camera; clipboard-write'); f.hidden = true; f.src = url;
+    document.getElementById('app').appendChild(f);
+    frames[k] = f;
+  }
+  return frames[k];
+}
 function show(page, id) {
   if (!TITLES[page]) page = 'home';
-  var url = BASE + (page === 'scan' ? '?' : '?p=' + page + '&') + 'embed=1&from=app' + (id && /^\d{5}$/.test(id) ? '&id=' + id : '');
   document.getElementById('intro').hidden = true;
   document.getElementById('app').hidden = false;
   document.getElementById('title').textContent = TITLES[page];
   document.getElementById('home').hidden = page === 'home';
-  document.getElementById('frame').src = url;
+  var cur = frameFor(page, id);
+  Object.keys(frames).forEach(function (k) { frames[k].hidden = frames[k] !== cur; });
+  if (page === 'home' && !frames.scan) setTimeout(function () { frameFor('scan'); }, 1500);
 }
 document.getElementById('home').onclick = function () { show('home'); };
 document.getElementById('open').onclick = function () { show('home'); };
