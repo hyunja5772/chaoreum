@@ -7,38 +7,60 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="차오름">
 <meta name="theme-color" content="#b8352e">
 <style>
-:root { --bg: #fbf6f1; --paper: #fff; --ink: #2a1d1a; --muted: #7a6a64; --brand: #b8352e; --line: #eee1d8; }
-@media (prefers-color-scheme: dark) { :root { --bg: #1a1413; --paper: #241c1a; --ink: #f3e9e5; --muted: #b3a29b; --brand: #f0675d; --line: #3b2f2c; } }
+:root { --bg: #fbf6f1; --paper: #fff; --ink: #2a1d1a; --muted: #7a6a64; --brand: #b8352e; --brand-2: #e2574c; --soft: #fde9e5; --cream: #fff4e6; --line: #eee1d8; --bad: #c23b22; }
+@media (prefers-color-scheme: dark) { :root { --bg: #1a1413; --paper: #241c1a; --ink: #f3e9e5; --muted: #b3a29b; --brand: #f0675d; --brand-2: #ff8a7e; --soft: #3c2421; --cream: #2c221c; --line: #3b2f2c; --bad: #ff8a72; } }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
-body { background: var(--bg); color: var(--ink); font: 16px/1.6 "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.6 "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 [hidden] { display: none !important; }
-/* 처음 한 번 보이는 설치 안내 */
-#intro { max-width: 480px; margin: 0 auto; padding: 28px 16px 48px; display: grid; gap: 16px; text-align: center; }
-img.icon { width: 112px; height: 112px; border-radius: 26px; margin: 0 auto; box-shadow: 0 8px 24px rgba(120, 50, 30, .25); }
-h1 { margin: 0; font-size: 1.6rem; }
-.go { display: block; width: 100%; padding: 16px; border: 0; border-radius: 16px; background: var(--brand); color: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; }
-.card { background: var(--paper); border-radius: 18px; padding: 16px; text-align: left; box-shadow: 0 6px 20px rgba(120, 50, 30, .08); }
+.page { max-width: 480px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 24px) 16px 48px; display: grid; gap: 16px; }
+img.icon { width: 96px; height: 96px; border-radius: 22px; margin: 0 auto; box-shadow: 0 8px 24px rgba(120, 50, 30, .25); }
+h1 { margin: 0; font-size: 1.6rem; text-align: center; }
+.go { display: block; width: 100%; padding: 16px; border: 0; border-radius: 16px; background: linear-gradient(180deg, var(--brand-2), var(--brand)); color: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; }
+.go:disabled { opacity: .5; }
+.card { background: var(--paper); border-radius: 18px; padding: 16px; box-shadow: 0 6px 20px rgba(120, 50, 30, .08); }
 .card h2 { margin: 0 0 6px; font-size: 1.05rem; color: var(--brand); }
 .card ol { margin: 0; padding-left: 20px; }
 .card p { margin: 8px 0 0; color: var(--muted); font-size: .9rem; }
-/* 앱 화면: 위 막대 + 차오름 앱 */
-#app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+label { display: block; font-size: .85rem; color: var(--muted); margin: 0 0 6px; font-weight: 600; }
+input { font: inherit; width: 100%; padding: 13px 14px; border: 2px solid var(--line); border-radius: 14px; background: var(--bg); color: var(--ink); }
+input:focus { outline: none; border-color: var(--brand); }
+.err { color: var(--bad); font-size: .9rem; min-height: 1.2em; margin: 0; }
+/* 첫 화면 메뉴 (구글 서버를 거치지 않아 바로 뜬다) */
+.hello { background: var(--cream); border-radius: 20px; padding: 18px; position: relative; overflow: hidden; }
+.hello::before { content: ""; position: absolute; right: -50px; top: -50px; width: 170px; height: 170px; border-radius: 50%; background: var(--soft); }
+.hello > * { position: relative; }
+.hello b { font-size: 1.5rem; display: block; }
+.hello span { color: var(--muted); font-size: .92rem; }
+.hello button { margin-top: 8px; font: inherit; font-size: .82rem; border: 0; background: none; color: var(--brand); text-decoration: underline; padding: 0; cursor: pointer; }
+.menu { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; padding: 18px; border-radius: 20px; background: var(--paper); box-shadow: 0 6px 20px rgba(120, 50, 30, .08); color: var(--ink); border: 0; font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.menu:active { transform: scale(.98); }
+.menu .ic { flex: none; width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; background: var(--soft); }
+.menu .ic svg { width: 30px; height: 30px; }
+.menu b { display: block; font-size: 1.2rem; }
+.menu small { color: var(--muted); font-size: .86rem; }
+.menu .arrow { margin-left: auto; color: var(--brand); font-size: 1.4rem; font-weight: 900; }
+/* 앱 화면: 위 막대 + 구글 앱 */
+#app { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); }
 .bar { flex: none; display: flex; align-items: center; gap: 8px; padding: calc(env(safe-area-inset-top) + 6px) 12px 6px; background: var(--brand); color: #fff; }
 .bar b { font-size: 1.05rem; flex: 1; }
 .bar button { font: inherit; font-weight: 700; border: 0; border-radius: 10px; padding: 6px 12px; background: rgba(255, 255, 255, .2); color: #fff; cursor: pointer; }
 .frame { flex: 1; width: 100%; border: 0; background: var(--bg); }
+.loading { flex: 1; display: grid; place-items: center; color: var(--muted); }
 </style>
 </head>
 <body>
-<div id="intro" hidden>
+<!-- 1) 처음 한 번만: 설치 안내 -->
+<div id="intro" class="page" hidden>
   <img class="icon" src="icon-192.png" alt="">
   <h1>차오름학원</h1>
-  <button class="go" id="open" type="button">앱 열기</button>
+  <button class="go" id="open" type="button">앱 시작하기</button>
   <div class="card">
     <h2>휴대폰 바탕화면에 추가하기</h2>
     <p><b>아이폰 (Safari)</b></p>
@@ -48,57 +70,135 @@ h1 { margin: 0; font-size: 1.6rem; }
     <p>카카오톡 안에서 열었다면 먼저 ‘다른 브라우저로 열기’를 눌러 주세요.</p>
   </div>
 </div>
-<div id="app" hidden>
-  <div class="bar"><b id="title">차오름학원</b><button type="button" id="home" hidden>‹ 처음으로</button></div>
 
+<!-- 2) 처음 한 번만: 학번·이름 -->
+<div id="login" class="page" hidden>
+  <img class="icon" src="icon-192.png" alt="">
+  <h1>반가워요!</h1>
+  <div class="card">
+    <p style="margin:0 0 12px">처음 한 번만 적으면 다음부터는 적지 않아도 돼요.</p>
+    <label for="sid">학번 5자리</label>
+    <input id="sid" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="예: 01234">
+    <label for="sname" style="margin-top:12px">이름</label>
+    <input id="sname" maxlength="20" autocomplete="name" placeholder="예: 김하늘">
+    <p class="err" id="loginErr"></p>
+  </div>
+  <button class="go" id="save" type="button">시작하기</button>
 </div>
+
+<!-- 3) 첫 화면 메뉴 -->
+<div id="home" class="page" hidden>
+  <div class="hello">
+    <img src="icon-192.png" alt="" style="width:44px;height:44px;border-radius:12px;display:block;margin-bottom:8px">
+    <b id="helloName">안녕하세요</b>
+    <span>오늘도 차오름! 하고 싶은 것을 눌러 주세요.</span><br>
+    <button type="button" id="change">학번·이름 바꾸기</button>
+  </div>
+  <button class="menu" type="button" data-page="scan">
+    <span class="ic"><svg viewBox="0 0 32 32" fill="none" stroke="#b8352e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="24" height="17" rx="4"/><path d="M11 9l2-4h6l2 4"/><circle cx="16" cy="17.5" r="5"/></svg></span>
+    <span><b>채점하기</b><small>OMR 카드 사진이나 직접 입력으로 채점해요</small></span><span class="arrow">›</span>
+  </button>
+  <button class="menu" type="button" data-page="practice">
+    <span class="ic"><svg viewBox="0 0 32 32" fill="none" stroke="#b8352e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h13l5 5v17H7z"/><path d="M11 14h10M11 19h10M11 24h6"/></svg></span>
+    <span><b>매일 학습</b><small>오늘의 문제를 풀어요</small></span><span class="arrow">›</span>
+  </button>
+  <button class="menu" type="button" data-page="photo">
+    <span class="ic"><svg viewBox="0 0 32 32" fill="none" stroke="#b8352e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="24" height="19" rx="3"/><circle cx="12" cy="14" r="2.5"/><path d="M28 22l-7-7-12 11"/></svg></span>
+    <span><b>사진 올리기</b><small>숙제·필기 사진을 선생님께 보내요</small></span><span class="arrow">›</span>
+  </button>
+</div>
+
+<!-- 4) 앱 화면 (미리 불러 둔 화면을 바로 보여 준다) -->
+<div id="app" hidden>
+  <div class="bar"><b id="title"></b><button type="button" id="back">‹ 처음으로</button></div>
+  <div class="loading" id="loading">불러오는 중…</div>
+</div>
+
 <script>
-// 차오름 앱(구글 웹앱). 이 페이지 안에 넣어 보여 주면 구글 안내 줄이 나오지 않는다.
 var BASE = 'https://script.google.com/macros/s/AKfycby6wevH_4gLeDjdg3YTxjlE85Xf26Z8GayVvH4tvjqTacKxgBvPrCWRDm7wwlZsMAuQ/exec';
-var TITLES = { home: '차오름학원', scan: '채점하기', practice: '매일 학습', photo: '사진 올리기' };
-// 속도: 한 번 연 화면은 다시 만들지 않고 숨겨 두었다가 다시 보여 준다. 채점하기는 미리 불러 둔다.
+var TITLES = { scan: '채점하기', practice: '매일 학습', photo: '사진 올리기' };
+var $ = function (id) { return document.getElementById(id); };
+function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+function load(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+function only(id) { ['intro', 'login', 'home', 'app'].forEach(function (x) { $(x).hidden = x !== id; }); window.scrollTo(0, 0); }
+
+// 학번·이름 (이 휴대폰에만 저장)
+var me = { id: load('chaoreumId'), name: load('chaoreumName') };
+
+// 세 화면을 미리 불러 둔다. 한 번 불러온 화면은 다시 만들지 않는다.
 var frames = {};
-function frameFor(page, id) {
-  var k = page + (page === 'practice' && id ? ':' + id : '');
-  if (!frames[k]) {
-    var url = BASE + (page === 'scan' ? '?' : '?p=' + page + '&') + 'embed=1&from=app' + (id && /^\d{5}$/.test(id) ? '&id=' + id : '');
+function urlFor(page) {
+  return BASE + (page === 'scan' ? '?' : '?p=' + page + '&') + 'embed=1&from=app' +
+    (me.id ? '&id=' + encodeURIComponent(me.id) : '') + (me.name ? '&name=' + encodeURIComponent(me.name) : '');
+}
+function frameFor(page) {
+  if (!frames[page]) {
     var f = document.createElement('iframe');
-    f.className = 'frame'; f.title = TITLES[page]; f.setAttribute('allow', 'camera; clipboard-write'); f.hidden = true; f.src = url;
-    document.getElementById('app').appendChild(f);
-    frames[k] = f;
+    f.className = 'frame'; f.title = TITLES[page]; f.setAttribute('allow', 'camera; clipboard-write'); f.hidden = true;
+    f.onload = function () { f.dataset.ready = '1'; if (current === page) { $('loading').hidden = true; f.hidden = false; } };
+    f.src = urlFor(page);
+    $('app').appendChild(f);
+    frames[page] = f;
   }
-  return frames[k];
+  return frames[page];
 }
-function show(page, id) {
-  if (!TITLES[page]) page = 'home';
-  document.getElementById('intro').hidden = true;
-  document.getElementById('app').hidden = false;
-  document.getElementById('title').textContent = TITLES[page];
-  document.getElementById('home').hidden = page === 'home';
-  var cur = frameFor(page, id);
-  Object.keys(frames).forEach(function (k) { frames[k].hidden = frames[k] !== cur; });
-  if (page === 'home' && !frames.scan) setTimeout(function () { frameFor('scan'); }, 1500);
+function preloadAll() { ['scan', 'practice', 'photo'].forEach(function (p, i) { setTimeout(function () { frameFor(p); }, i * 300); }); }
+function resetFrames() { Object.keys(frames).forEach(function (k) { frames[k].remove(); }); frames = {}; }
+
+var current = '';
+function open(page) {
+  if (!TITLES[page]) return goHome();
+  current = page;
+  $('title').textContent = TITLES[page];
+  var f = frameFor(page);
+  Object.keys(frames).forEach(function (k) { frames[k].hidden = frames[k] !== f || !f.dataset.ready; });
+  $('loading').hidden = !!f.dataset.ready;
+  only('app');
 }
-document.getElementById('home').onclick = function () { show('home'); };
-document.getElementById('open').onclick = function () { show('home'); };
-// 앱 안의 메뉴를 누르면 앱이 알려 준다 → 이 페이지 안에서 화면을 바꾼다
+function goHome() {
+  current = '';
+  $('helloName').textContent = me.name ? me.name + ' 학생, 안녕하세요' : '안녕하세요';
+  only('home');
+  preloadAll();
+}
+document.querySelectorAll('.menu').forEach(function (b) { b.onclick = function () { open(b.dataset.page); }; });
+$('back').onclick = goHome;
+
+// 학번·이름 입력
+function showLogin() { $('sid').value = me.id; $('sname').value = me.name; $('loginErr').textContent = ''; only('login'); }
+$('change').onclick = showLogin;
+$('save').onclick = function () {
+  var id = $('sid').value.replace(/\D/g, ''), name = $('sname').value.trim();
+  if (id.length !== 5) { $('loginErr').textContent = '학번 5자리를 적어 주세요.'; return; }
+  if (!name) { $('loginErr').textContent = '이름을 적어 주세요.'; return; }
+  var changed = id !== me.id || name !== me.name;
+  me = { id: id, name: name }; store('chaoreumId', id); store('chaoreumName', name);
+  if (changed) resetFrames();
+  goHome();
+};
+function start() { if (me.id && me.name) goHome(); else showLogin(); }
+$('open').onclick = start;
+
+// 앱 안의 버튼(예: 채점 결과의 매일 학습)이 화면 전환을 부탁하면 바꿔 준다
 window.addEventListener('message', function (e) {
-  var d = e.data;
-  var host = ''; try { host = new URL(e.origin).hostname; } catch (err) {}
+  var d = e.data, host = '';
+  try { host = new URL(e.origin).hostname; } catch (err) {}
   if (!d || d.chaoreum !== 'go' || !/\.googleusercontent\.com$/.test(host)) return;
-  show(d.page, d.id);
+  if (d.page === 'home') goHome(); else open(d.page);
 });
-// 처음 한 번만 설치 안내를 보여 주고, 그다음부터(바탕화면 아이콘 등)는 바로 앱을 연다
+
+// 처음 한 번만 설치 안내를 보여 주고, 그다음부터(바탕화면 아이콘 등)는 바로 시작한다
 var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
 var seen = false, thisVisit = false;
 try { seen = localStorage.getItem('chaoreumSeen') === '1'; thisVisit = sessionStorage.getItem('chaoreumVisit') === '1'; } catch (e) {}
 var marked = /[?&]app=1\b/.test(location.search) || /[#&]i=1\b/.test(location.hash);
 if (!thisVisit && (standalone || marked || seen)) {
-  show('home');
+  start();
 } else {
   try { localStorage.setItem('chaoreumSeen', '1'); sessionStorage.setItem('chaoreumVisit', '1'); } catch (e) {}
   history.replaceState(null, '', location.pathname + '#i=1');
-  document.getElementById('intro').hidden = false;
+  only('intro');
+  if (me.id && me.name) preloadAll();
 }
 </script>
 </body>
