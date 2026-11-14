@@ -122,6 +122,11 @@ function store(k, v) { try { if (v == null) localStorage.removeItem(k); else loc
 function load(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
 function only(id) { ['intro', 'login', 'home', 'app'].forEach(function (x) { $(x).hidden = x !== id; }); window.scrollTo(0, 0); }
 
+// 예전 QR에서 넘어오면(#go=scan 등) 시작한 뒤 그 화면을 바로 연다
+var GO = (location.hash.match(/[#&]go=(scan|practice|photo|home)\b/) || [])[1] || '';
+// 주소에서 #go를 지워 둔다(이 상태로 바탕화면에 추가해도 첫 화면으로 열리게)
+if (GO) history.replaceState(null, '', location.pathname + '#i=1');
+
 // 학번·이름 (이 휴대폰에만 저장)
 var me = { id: load('chaoreumId'), name: load('chaoreumName') };
 
@@ -175,8 +180,13 @@ $('save').onclick = function () {
   me = { id: id, name: name }; store('chaoreumId', id); store('chaoreumName', name);
   if (changed) resetFrames();
   goHome();
+  if (GO) { var g = GO; GO = ''; if (g !== 'home') open(g); }
 };
-function start() { if (me.id && me.name) goHome(); else showLogin(); }
+function start() {
+  if (!(me.id && me.name)) return showLogin();
+  goHome();
+  if (GO) { var g = GO; GO = ''; if (g !== 'home') open(g); }
+}
 $('open').onclick = start;
 
 // 앱 안의 버튼(예: 채점 결과의 매일 학습)이 화면 전환을 부탁하면 바꿔 준다
@@ -191,7 +201,7 @@ window.addEventListener('message', function (e) {
 var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
 var seen = false, thisVisit = false;
 try { seen = localStorage.getItem('chaoreumSeen') === '1'; thisVisit = sessionStorage.getItem('chaoreumVisit') === '1'; } catch (e) {}
-var marked = /[?&]app=1\b/.test(location.search) || /[#&]i=1\b/.test(location.hash);
+var marked = /[?&]app=1\b/.test(location.search) || /[#&]i=1\b/.test(location.hash) || !!GO;
 if (!thisVisit && (standalone || marked || seen)) {
   start();
 } else {
