@@ -57,7 +57,7 @@ var setup = false;
 try { setup = sessionStorage.getItem('chaoreumTeacherSetup') === '1'; } catch (e) {}
 if (key && h.get('i') === '1' && !setup) {
   // 바탕화면 아이콘으로 열었을 때: 안내 없이 바로 교사용 화면으로
-  location.replace(url);
+  location.replace(url + '&from=app');
 } else if (key) {
   // 처음 연 때: 안내를 보여 주고, 이 주소(#…&i=1)를 바탕화면에 추가하게 한다
   try { sessionStorage.setItem('chaoreumTeacherSetup', '1'); } catch (e) {}
