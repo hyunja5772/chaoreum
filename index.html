@@ -16,7 +16,8 @@
 :root { --bg: #fbf6f1; --paper: #fff; --ink: #2a1d1a; --muted: #7a6a64; --brand: #b8352e; --brand-2: #e2574c; --soft: #fde9e5; --cream: #fff4e6; --line: #eee1d8; --bad: #c23b22; }
 @media (prefers-color-scheme: dark) { :root { --bg: #1a1413; --paper: #241c1a; --ink: #f3e9e5; --muted: #b3a29b; --brand: #f0675d; --brand-2: #ff8a7e; --soft: #3c2421; --cream: #2c221c; --line: #3b2f2c; --bad: #ff8a72; } }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; }
+html, body { margin: 0; height: 100%; max-width: 100%; overflow-x: hidden; }
+body { overflow-wrap: anywhere; }
 body { background: var(--bg); color: var(--ink); font: 16px/1.6 "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 [hidden] { display: none !important; }
 .page { max-width: 480px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 24px) 16px 48px; display: grid; gap: 16px; }
