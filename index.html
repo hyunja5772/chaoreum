@@ -141,7 +141,7 @@ function frameFor(page) {
   if (!frames[page]) {
     var f = document.createElement('iframe');
     f.className = 'frame'; f.title = TITLES[page]; f.setAttribute('allow', 'camera; clipboard-write'); f.hidden = true;
-    f.onload = function () { f.dataset.ready = '1'; if (current === page) { $('loading').hidden = true; f.hidden = false; } };
+    f.onload = function () { f.dataset.ready = '1'; };
     f.src = urlFor(page);
     $('app').appendChild(f);
     frames[page] = f;
@@ -157,9 +157,14 @@ function open(page) {
   current = page;
   $('title').textContent = TITLES[page];
   var f = frameFor(page);
-  Object.keys(frames).forEach(function (k) { frames[k].hidden = frames[k] !== f || !f.dataset.ready; });
-  $('loading').hidden = !!f.dataset.ready;
+  // 다 불러오지 않았어도 화면에 내놓는다(숨겨 둔 채로는 휴대폰이 불러오기를 미루는 일이 있다)
+  Object.keys(frames).forEach(function (k) { frames[k].hidden = frames[k] !== f; });
+  $('loading').hidden = true;
   only('app');
+  // 10초가 지나도 안 열리면 한 번 새로 불러온다
+  if (!f.dataset.ready) setTimeout(function () {
+    if (current === page && frames[page] === f && !f.dataset.ready) { f.src = urlFor(page) + '&retry=' + Date.now(); }
+  }, 10000);
 }
 function goHome() {
   current = '';
