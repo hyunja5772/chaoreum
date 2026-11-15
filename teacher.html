@@ -10,22 +10,106 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="차오름 선생님">
 <meta name="theme-color" content="#b8352e">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap" media="print" onload="this.media='all'">
 <style>
-:root { --bg: #fbf6f1; --paper: #fff; --ink: #2a1d1a; --muted: #7a6a64; --brand: #b8352e; }
-@media (prefers-color-scheme: dark) { :root { --bg: #1a1413; --paper: #241c1a; --ink: #f3e9e5; --muted: #b3a29b; --brand: #f0675d; } }
+:root {
+  --bg: #fbf6f1; --paper: #ffffff; --ink: #2a1d1a; --muted: #7a6a64; --line: #eee1d8;
+  --brand: #b8352e; --brand-2: #e2574c; --brand-soft: #fde9e5; --cream: #fff4e6;
+  --ok: #1f8a57; --ok-soft: #e3f5eb; --warn: #b26b00; --warn-soft: #fff1d6; --bad: #c23b22; --bad-soft: #fde3dc;
+  --shadow: 0 6px 24px rgba(120, 50, 30, .10);
+  --font-title: "Jua", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1a1413; --paper: #241c1a; --ink: #f3e9e5; --muted: #b3a29b; --line: #3b2f2c;
+    --brand: #f0675d; --brand-2: #ff8a7e; --brand-soft: #3c2421; --cream: #2c221c;
+    --ok: #5fd096; --ok-soft: #1b3428; --warn: #f2b453; --warn-soft: #3a2d14; --bad: #ff8a72; --bad-soft: #40231d;
+    --shadow: 0 6px 24px rgba(0, 0, 0, .35); color-scheme: dark; }
+}
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; }
-body { background: var(--bg); color: var(--ink); font: 16px/1.6 "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font-body); -webkit-font-smoothing: antialiased; }
+main { max-width: 640px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-left)) 56px; display: grid; gap: 14px; }
+h1, h2 { font-family: var(--font-title); font-weight: 400; margin: 0; }
+.hero { border-radius: 20px; padding: 16px; background: var(--cream); box-shadow: var(--shadow); display: grid; gap: 10px; }
+.hero-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.logo { display: block; height: 34px; width: auto; max-width: 60%; }
+@media (prefers-color-scheme: dark) { .logo { background: #fff; padding: 3px 7px; border-radius: 9px; } }
+.academy { font-weight: 700; color: var(--brand); }
+.badge { font-size: .75rem; font-weight: 700; color: var(--brand); background: var(--paper); border-radius: 99px; padding: 3px 10px; }
+.hero h1 { font-size: 1.7rem; line-height: 1.2; }
+.datebar { display: flex; gap: 6px; align-items: center; }
+.datebar input { flex: 1; min-width: 0; font: inherit; padding: 9px 10px; border: 2px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); }
+.datebar button, .chip { font: inherit; font-weight: 700; border: 2px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 12px; padding: 8px 12px; cursor: pointer; white-space: nowrap; }
+.datebar button:active, .chip:active { transform: scale(.97); }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.tile { background: var(--paper); border-radius: 16px; padding: 10px; box-shadow: var(--shadow); text-align: center; }
+.tile b { display: block; font-family: var(--font-title); font-weight: 400; font-size: 1.6rem; line-height: 1.1; color: var(--brand); }
+.tile small { color: var(--muted); font-size: .75rem; }
+@media (max-width: 380px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.card { background: var(--paper); border-radius: 18px; padding: 14px; box-shadow: var(--shadow); display: grid; gap: 10px; }
+.card h2 { font-size: 1.2rem; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; }
+.card h2 small { flex-basis: 100%; }
+.card h2 small { font-family: var(--font-body); font-size: .8rem; color: var(--muted); }
+.st { border: 2px solid var(--line); border-radius: 14px; padding: 10px 12px; display: grid; gap: 6px; }
+.st.low { border-color: var(--bad); background: var(--bad-soft); }
+.st .top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.st .nm { font-weight: 900; font-size: 1.05rem; }
+.st .nm.often { color: var(--warn); }
+.st .meta { color: var(--muted); font-size: .82rem; }
+.st .time { margin-left: auto; color: var(--muted); font-size: .85rem; }
+.tag { font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--bg); color: var(--muted); }
+.tag.week { background: var(--warn-soft); color: var(--warn); }
+.tag.guest { background: var(--bad-soft); color: var(--bad); }
+.tag.ok { background: var(--ok-soft); color: var(--ok); }
+.sub { font-size: .9rem; }
+.sub b { color: var(--brand); }
+.sub .wr { color: var(--muted); font-size: .82rem; }
+.acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.acts a, .acts button { font: inherit; font-size: .82rem; font-weight: 700; text-decoration: none; border-radius: 10px; padding: 6px 10px; border: 0; cursor: pointer; background: var(--brand-soft); color: var(--brand); }
+.empty { color: var(--muted); font-size: .9rem; }
+details > summary { cursor: pointer; font-family: var(--font-title); font-size: 1.2rem; list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: "▸ "; color: var(--brand); }
+details[open] > summary::before { content: "▾ "; }
 [hidden] { display: none !important; }
+.pgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.ph { font: inherit; text-align: left; border: 2px solid var(--line); border-radius: 14px; padding: 6px; background: var(--paper); color: var(--ink); cursor: pointer; display: grid; gap: 2px; }
+.ph .pimg { display: grid; place-items: center; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--bg); color: var(--muted); font-size: .8rem; }
+.ph .pimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph b { font-size: .9rem; } .ph small { color: var(--muted); font-size: .75rem; }
+.big { position: fixed; inset: 0; z-index: 10; background: rgba(0, 0, 0, .88); display: grid; grid-template-rows: 1fr auto auto; gap: 8px; padding: 16px; }
+.big img { width: 100%; height: 100%; object-fit: contain; min-height: 0; }
+.big p { margin: 0; color: #fff; text-align: center; font-size: .9rem; }
+.big button { font: inherit; font-weight: 700; border: 0; border-radius: 12px; padding: 12px; background: #fff; color: #2a1d1a; cursor: pointer; }
+.absent { display: grid; gap: 8px; margin-top: 8px; }
+.absent h3 { margin: 4px 0 0; font-size: .85rem; color: var(--muted); }
+.absent .names { display: flex; flex-wrap: wrap; gap: 6px; }
+.absent .names span { background: var(--bg); border-radius: 99px; padding: 3px 10px; font-size: .88rem; }
+.absent .names span small { color: var(--muted); }
+.msg { padding: 10px 12px; border-radius: 12px; font-size: .9rem; background: var(--bad-soft); color: var(--bad); }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 99px; font-size: .9rem; opacity: 0; transition: opacity .2s; pointer-events: none; }
+.toast.on { opacity: 1; }
+.loading { text-align: center; color: var(--muted); padding: 24px 0; }
+footer { text-align: center; color: var(--muted); font-size: .78rem; }
+.help { font-size: .88rem; color: var(--muted); }
+.help p { margin: 6px 0 0; }
+/* 내용이 길어도 화면이 옆으로 커지지 않게: 긴 글은 줄을 바꾸고, 칸과 그림은 화면 너비를 넘지 않는다 */
+html, body { max-width: 100%; overflow-x: hidden; }
+body { overflow-wrap: anywhere; }
+main, main > *, section, .card, .card > * { min-width: 0; max-width: 100%; }
+img, canvas, svg, video, iframe { max-width: 100%; }
+table { display: block; max-width: 100%; overflow-x: auto; }
+
 #intro { max-width: 480px; margin: 0 auto; padding: 28px 16px 48px; display: grid; gap: 16px; text-align: center; }
 img.icon { width: 112px; height: 112px; border-radius: 26px; margin: 0 auto; box-shadow: 0 8px 24px rgba(120, 50, 30, .25); }
-h1 { margin: 0; font-size: 1.6rem; }
+#intro h1 { font-size: 1.6rem; }
 .go { display: block; width: 100%; padding: 16px; border: 0; border-radius: 16px; background: var(--brand); color: #fff; font: inherit; font-weight: 800; font-size: 1.1rem; cursor: pointer; }
-.card { background: var(--paper); border-radius: 18px; padding: 16px; text-align: left; box-shadow: 0 6px 20px rgba(120, 50, 30, .08); }
-.card h2 { margin: 0 0 6px; font-size: 1.05rem; color: var(--brand); }
-.card ol { margin: 0; padding-left: 20px; }
-.card p { margin: 8px 0 0; color: var(--muted); font-size: .9rem; }
-#frame { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; padding-top: env(safe-area-inset-top); background: var(--bg); }
+#intro .card { text-align: left; display: block; }
+#intro .card h2 { margin: 0 0 6px; font-size: 1.05rem; color: var(--brand); }
+#intro .card ol { margin: 0; padding-left: 20px; }
+#intro .card p { margin: 8px 0 0; color: var(--muted); font-size: .9rem; }
 </style>
 </head>
 <body>
@@ -48,18 +132,194 @@ h1 { margin: 0; font-size: 1.6rem; }
     <p>선생님이 받은 ‘교사용 QR’로 처음 한 번 열어 주세요.</p>
   </div>
 </div>
-<iframe id="frame" title="교사용 화면" hidden></iframe>
+<main id="app" hidden>
+  <section class="hero">
+    <div class="hero-top">
+      <img class="logo" src="logo.png" alt="차오름학원">
+      <span class="badge">선생님 전용</span>
+    </div>
+    <h1>오늘 학원 현황</h1>
+    <div class="datebar">
+      <button id="prev" aria-label="전날">‹</button>
+      <input type="date" id="day" aria-label="날짜">
+      <button id="next" aria-label="다음 날">›</button>
+      <button id="today">오늘</button>
+    </div>
+  </section>
+
+  <div id="err" class="msg" hidden></div>
+  <div id="out"><div class="loading">불러오는 중…</div></div>
+
+  <details class="card help" id="addHelp">
+    <summary>휴대폰 바탕화면에 추가하는 법</summary>
+    <p><b>아이폰(Safari)</b> 아래 공유 버튼(□↑) → ‘홈 화면에 추가’</p>
+    <p><b>갤럭시(Chrome·삼성 인터넷)</b> 메뉴(⋮ 또는 ☰) → ‘홈 화면에 추가’</p>
+    <p>이 주소는 선생님만 쓰세요. 학생 이름과 점수가 보여요.</p>
+  </details>
+  <footer>차오름학원 · 교사용</footer>
+</main>
+<div class="toast" id="toast"></div>
+<div class="big" id="big" hidden><img id="bigImg" alt=""><p id="bigCap"></p><button type="button" id="bigClose">닫기</button></div>
+
 <script>
 // 교사용 비밀 키는 이 파일에 없다. 선생님 QR 주소의 # 뒤(#k=…)로만 들어오고, 이 휴대폰에만 저장된다.
-// 교사용 화면은 이 페이지 안에 넣어 보여 준다(구글 안내 줄이 나오지 않게).
 var BASE = 'https://script.google.com/macros/s/AKfycby6wevH_4gLeDjdg3YTxjlE85Xf26Z8GayVvH4tvjqTacKxgBvPrCWRDm7wwlZsMAuQ/exec';
 var h = new URLSearchParams(location.hash.slice(1));
 var key = h.get('k') || '';
 try { if (key) localStorage.setItem('chaoreumTeacherKey', key); else key = localStorage.getItem('chaoreumTeacherKey') || ''; } catch (e) {}
-var url = BASE + '?p=teacher&k=' + encodeURIComponent(key) + '&embed=1&from=app';
+// 구글 화면 대신 자료만 받아 온다(google.script.run 과 같은 모양으로 쓴다)
+function api(f, a) {
+  return fetch(BASE + '?p=api&f=' + f + '&a=' + encodeURIComponent(JSON.stringify(a)))
+    .then(function (r) { return r.json(); })
+    .then(function (j) { if (!j.ok) throw new Error(j.err || '불러오지 못했어요'); return j.r; },
+          function (e) { throw new Error((e && e.message === 'Failed to fetch') ? '인터넷 연결을 확인해 주세요.' : ((e && e.message) || String(e))); });
+}
+function Runner(s, f) { this.s = s; this.f = f; }
+Runner.prototype.withSuccessHandler = function (x) { return new Runner(x, this.f); };
+Runner.prototype.withFailureHandler = function (x) { return new Runner(this.s, x); };
+['getTeacherData', 'getPhotoThumbs', 'getPhotoData'].forEach(function (n) {
+  Runner.prototype[n] = function () {
+    var me = this, a = Array.prototype.slice.call(arguments);
+    api(n, a).then(function (r) { if (me.s) me.s(r); }, function (e) { if (me.f) me.f(e); });
+  };
+});
+var google = { script: { run: new Runner(), url: { getLocation: function (cb) { cb({ parameter: { from: 'app' } }); } } } };
+
+var KEY = key;
+var $ = function (id) { return document.getElementById(id); };
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function ymd(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function shift(n) { var d = new Date($('day').value + 'T12:00:00'); d.setDate(d.getDate() + n); $('day').value = ymd(d); load(); }
+function toast(t) { var el = $('toast'); el.textContent = t; el.classList.add('on'); setTimeout(function () { el.classList.remove('on'); }, 1600); }
+function copy(text) {
+  function fallback() {
+    var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('복사했어요'); } catch (e) { prompt('아래 내용을 길게 눌러 복사하세요', text); }
+    ta.remove();
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast('복사했어요'); }, fallback);
+  else fallback();
+}
+
+var data = null, THUMB = {}, loadSeq = 0;
+// 속도: 이 휴대폰에 지난번 자료를 기억해 두고 열자마자 먼저 보여 준 뒤, 새 자료가 오면 바꾼다
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function load() {
+  var day = $('day').value, seq = ++loadSeq;
+  $('err').hidden = true;
+  var saved = lsGet('chaoreumTd:' + day);
+  if (saved) { render(saved); $('out').insertAdjacentHTML('afterbegin', '<div class="loading" id="refreshing" style="padding:4px">새 자료 확인 중…</div>'); }
+  else $('out').innerHTML = '<div class="loading">불러오는 중…</div>';
+  google.script.run.withSuccessHandler(function (d) {
+    if (seq !== loadSeq) return;
+    lsSet('chaoreumTd:' + day, d); render(d);
+  }).withFailureHandler(function (e) {
+    if (seq !== loadSeq) return;
+    var r = $('refreshing'); if (r) r.remove();
+    if (!saved) $('out').innerHTML = '';
+    $('err').textContent = (e && e.message) || String(e); $('err').hidden = false;
+  }).getTeacherData(KEY, day);
+}
+
+function studentCard(c) {
+  var tags = '';
+  if (c.guest) tags += '<span class="tag guest">명단 없음</span>';
+  if (c.week >= 2) tags += '<span class="tag week">이번 주 ' + c.week + '번째</span>';
+  if (c.status && c.status !== '출석') tags += '<span class="tag">' + esc(c.status) + '</span>';
+  var subs = c.subs.length ? c.subs.map(function (x) {
+    return '<div class="sub">' + esc(x.test) + ' · <b>' + x.score + ' / ' + x.total + '</b>' +
+      (x.wrong ? ' <span class="wr">틀린 문항 ' + esc(x.wrong.split(',').join(', ')) + '</span>' : ' <span class="wr">모두 맞음</span>') + '</div>';
+  }).join('') : '<div class="sub wr">테스트 제출 없음</div>';
+  var rt = c.retake.length ? '<div class="sub wr">매일 학습 ' + c.retake.map(function (r) { return esc(r.unit) + ' ' + r.score + '점'; }).join(', ') + '</div>' : '';
+  var low = c.subs.some(function (x) { return x.low; });
+  var acts = c.link ? '<div class="acts"><a href="' + esc(c.link) + '" target="_blank" rel="noopener">리포트 보기</a>' +
+    '<button data-copy="' + esc('오늘 ' + c.name + ' 학생이 공부한 내용 링크로 보내드립니다.\n' + c.link) + '">학부모 문자 복사</button></div>' : '';
+  return '<div class="st' + (low ? ' low' : '') + '"><div class="top"><span class="nm' + (c.week >= 2 ? ' often' : '') + '">' + esc(c.name) + '</span>' + tags +
+    '<span class="time">' + esc(c.time) + '</span></div><div class="meta">' +
+    esc([c.school, c.cls, c.id].filter(Boolean).join(' · ')) + '</div>' + subs + rt + acts + '</div>';
+}
+
+function render(d) {
+  data = d;
+  var tiles = '<div class="tiles">' +
+    '<div class="tile"><b>' + d.came.length + '</b><small>온 학생 / ' + d.total + '명</small></div>' +
+    '<div class="tile"><b>' + d.submitted + '</b><small>테스트 제출</small></div>' +
+    '<div class="tile"><b>' + (d.avg == null ? '—' : d.avg) + '</b><small>평균 점수(%)</small></div>' +
+    '<div class="tile"><b>' + d.low + '</b><small>' + (d.cut ? d.cut + '점 미만' : '기준 미만') + '</small></div></div>';
+
+  var low = d.came.filter(function (c) { return c.subs.some(function (x) { return x.low; }); });
+  var lowCard = d.cut ? '<section class="card"><h2>기준 점수 미만 <small>' + d.cut + '점 미만</small></h2>' +
+    (low.length ? low.map(studentCard).join('') : '<div class="empty">없어요</div>') + '</section>' : '';
+
+  var cameCard = '<section class="card"><h2>온 학생 <small>' + d.came.length + '명 · 온 시간 순 · 노란 이름 = 이번 주 2번 이상</small></h2>' +
+    (d.came.length ? d.came.map(studentCard).join('') : '<div class="empty">아직 온 학생이 없어요</div>') + '</section>';
+
+  var groups = {};
+  d.absent.forEach(function (s) { (groups[s.school || '학교 없음'] = groups[s.school || '학교 없음'] || []).push(s); });
+  var absentCard = '<details class="card"><summary>안 온 학생 ' + d.absent.length + '명</summary><div class="absent">' +
+    Object.keys(groups).map(function (g) {
+      return '<h3>' + esc(g) + ' ' + groups[g].length + '명</h3><div class="names">' +
+        groups[g].map(function (s) { return '<span>' + esc(s.name) + ' <small>' + esc(s.cls) + '</small></span>'; }).join('') + '</div>';
+    }).join('') + '</div></details>';
+
+  var photos = d.photos || [];
+  var photoCard = '<section class="card"><h2>올라온 사진 <small>' + photos.length + '장 · 누르면 크게 보여요</small></h2>' +
+    (photos.length ? '<div class="pgrid">' + photos.map(function (p, i) {
+      return '<button class="ph" type="button" data-i="' + i + '"><span class="pimg" id="pimg' + i + '">불러오는 중…</span>' +
+        '<b>' + esc(p.name) + '</b><small>' + esc(p.time) + (p.memo ? ' · ' + esc(p.memo) : '') + '</small></button>';
+    }).join('') + '</div>' : '<div class="empty">아직 올라온 사진이 없어요</div>') + '</section>';
+
+  $('out').innerHTML = '<div style="display:grid;gap:14px">' + tiles + lowCard + cameCard + photoCard + absentCard + '</div>';
+  // 목록에는 작은 미리보기만 먼저 불러오고(한 번에, 본 적 있는 건 휴대폰에 기억), 누르면 원본을 불러온다
+  var showThumb = function (i, src) { var el = $('pimg' + i); if (el) el.innerHTML = src ? '<img alt="" src="' + src + '">' : '열지 못했어요'; };
+  var need = [];
+  photos.forEach(function (p, i) {
+    var src = THUMB[p.fileId] || (THUMB[p.fileId] = lsGet('chaoreumTh:' + p.fileId));
+    if (src) showThumb(i, src); else if (need.indexOf(p.fileId) < 0) need.push(p.fileId);
+  });
+  if (need.length) google.script.run.withSuccessHandler(function (m) {
+    Object.keys(m || {}).forEach(function (id) { if (m[id]) { THUMB[id] = m[id]; lsSet('chaoreumTh:' + id, m[id]); } });
+    photos.forEach(function (p, i) { if (need.indexOf(p.fileId) >= 0) showThumb(i, THUMB[p.fileId]); });
+  }).withFailureHandler(function () { photos.forEach(function (p, i) { if (need.indexOf(p.fileId) >= 0) showThumb(i, ''); }); })
+    .getPhotoThumbs(KEY, need);
+  $('out').querySelectorAll('.ph').forEach(function (b) {
+    b.onclick = function () {
+      var p = photos[Number(b.dataset.i)];
+      $('bigCap').textContent = p.name + ' · ' + p.time + (p.memo ? ' · ' + p.memo : '');
+      $('big').hidden = false;
+      if (p.src) { $('bigImg').src = p.src; return; }
+      $('bigImg').removeAttribute('src'); $('bigCap').textContent = '사진을 불러오는 중…';
+      google.script.run.withSuccessHandler(function (src) {
+        p.src = src; $('bigImg').src = src;
+        $('bigCap').textContent = p.name + ' · ' + p.time + (p.memo ? ' · ' + p.memo : '');
+      }).withFailureHandler(function () { $('bigCap').textContent = '사진을 열지 못했어요'; }).getPhotoData(KEY, p.fileId);
+    };
+  });
+  $('out').querySelectorAll('[data-copy]').forEach(function (b) { b.onclick = function () { copy(b.getAttribute('data-copy')); }; });
+}
+
+// 바탕화면 '차오름 선생님' 아이콘으로 열면(주소에 from=app) 바탕화면 추가 안내를 숨기고, 이 휴대폰에서는 계속 숨긴다
+try { if (localStorage.getItem('chaoreumTeacherApp') === '1') $('addHelp').hidden = true; } catch (e) {}
+google.script.url.getLocation(function (loc) {
+  if (loc && loc.parameter && loc.parameter.from === 'app') {
+    $('addHelp').hidden = true;
+    try { localStorage.setItem('chaoreumTeacherApp', '1'); } catch (e) {}
+  }
+});
+
+$('bigClose').onclick = function () { $('big').hidden = true; };
+$('day').value = ymd(new Date());
+$('day').addEventListener('change', load);
+$('prev').onclick = function () { shift(-1); };
+$('next').onclick = function () { shift(1); };
+$('today').onclick = function () { $('day').value = ymd(new Date()); load(); };
+
 function openApp() {
   document.getElementById('intro').hidden = true;
-  var f = document.getElementById('frame'); f.hidden = false; f.src = url;
+  document.getElementById('app').hidden = false;
+  load();
 }
 document.getElementById('open').onclick = openApp;
 var setup = false, seen = false;
