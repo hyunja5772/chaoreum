@@ -84,6 +84,10 @@ details[open] > summary::before { content: "▾ "; }
 .big p { margin: 0; color: #fff; text-align: center; font-size: .9rem; }
 .big button { font: inherit; font-weight: 700; border: 0; border-radius: 12px; padding: 12px; background: #fff; color: #2a1d1a; cursor: pointer; }
 .absent { display: grid; gap: 8px; margin-top: 8px; }
+.clist { display: grid; gap: 4px; margin: 8px 0 4px; }
+.crow { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; padding: 6px 10px; border-radius: 10px; background: var(--bg); min-width: 0; }
+.crow .ct { font-weight: 700; color: var(--brand); min-width: 3.2em; }
+.crow small { color: var(--muted); font-size: .8rem; flex-basis: 100%; padding-left: calc(3.2em + 6px); }
 .absent h3 { margin: 4px 0 0; font-size: .85rem; color: var(--muted); }
 .absent .names { display: flex; flex-wrap: wrap; gap: 6px; }
 .absent .names span { background: var(--bg); border-radius: 99px; padding: 3px 10px; font-size: .88rem; }
@@ -178,7 +182,7 @@ function api(f, a) {
 function Runner(s, f) { this.s = s; this.f = f; }
 Runner.prototype.withSuccessHandler = function (x) { return new Runner(x, this.f); };
 Runner.prototype.withFailureHandler = function (x) { return new Runner(this.s, x); };
-['getTeacherData', 'getPhotoThumbs', 'getPhotoData'].forEach(function (n) {
+['getTeacherData', 'getPhotoThumbs', 'getPhotoData', 'getClinicData'].forEach(function (n) {
   Runner.prototype[n] = function () {
     var me = this, a = Array.prototype.slice.call(arguments);
     api(n, a).then(function (r) { if (me.s) me.s(r); }, function (e) { if (me.f) me.f(e); });
@@ -289,7 +293,9 @@ function render(d) {
         '<b>' + esc(p.name) + '</b><small>' + esc(p.time) + (p.memo ? ' · ' + esc(p.memo) : '') + '</small></button>';
     }).join('') + '</div>' : '<div class="empty">아직 올라온 사진이 없어요</div>') + '</section>';
 
-  $('out').innerHTML = '<div style="display:grid;gap:14px">' + tiles + dailyCard + lowCard + cameCard + photoCard + absentCard + '</div>';
+  var clinicCard = '<section class="card" id="clinicCard"><h2>클리닉 예약</h2><div class="empty">불러오는 중…</div></section>';
+  $('out').innerHTML = '<div style="display:grid;gap:14px">' + tiles + dailyCard + lowCard + cameCard + clinicCard + photoCard + absentCard + '</div>';
+  loadClinic(d.day);
   // 목록에는 작은 미리보기만 먼저 불러오고(한 번에, 본 적 있는 건 휴대폰에 기억), 누르면 원본을 불러온다
   var showThumb = function (i, src) { var el = $('pimg' + i); if (el) el.innerHTML = src ? '<img alt="" src="' + src + '">' : '열지 못했어요'; };
   var need = [];
@@ -316,6 +322,38 @@ function render(d) {
     };
   });
   $('out').querySelectorAll('[data-copy]').forEach(function (b) { b.onclick = function () { copy(b.getAttribute('data-copy')); }; });
+}
+
+// 클리닉 예약(학원 클리닉 시트): 요일별로 묶고, 고른 날짜의 요일은 펼쳐 둔다. 한 번 받은 건 이 휴대폰에 기억.
+var CL = {}, CL_ASKED = {};
+function drawClinic(c) {
+  var box = $('clinicCard'); if (!box) return;
+  if (!c || c.error) { box.innerHTML = '<h2>클리닉 예약</h2><div class="empty">' + esc(c ? c.error : '불러오지 못했어요') + '</div>'; return; }
+  var total = c.days.reduce(function (s, g) { return s + g.list.length; }, 0);
+  box.innerHTML = '<h2>클리닉 예약 <small>요일별 ' + total + '명' + (c.week ? ' · ✓ = ' + esc(c.week) + ' 출석 체크됨' : '') + '</small></h2>' +
+    (c.days.length ? c.days.map(function (g) {
+      var done = g.list.filter(function (s) { return s.done; }).length;
+      return '<details' + (g.day === c.today ? ' open' : '') + '><summary>' + esc(g.day) + ' ' + g.list.length + '명' +
+        (c.week ? ' <small style="font-family:var(--font-body);font-size:.8rem;color:var(--muted)">출석 ' + done + '</small>' : '') +
+        (g.day === c.today ? ' <span class="tag week">오늘</span>' : '') + '</summary><div class="clist">' +
+        g.list.map(function (s) {
+          return '<div class="crow"><span class="ct">' + esc(s.time || '—') + '</span><b>' + esc(s.name) + '</b>' +
+            (s.done ? ' <span class="tag ok">✓</span>' : '') + '<small>' + esc([s.school, s.cls].filter(Boolean).join(' · ')) + '</small></div>';
+        }).join('') + '</div></details>';
+    }).join('') : '<div class="empty">예약한 학생이 없어요</div>');
+}
+function loadClinic(day) {
+  if (!CL[day]) CL[day] = lsGet('chaoreumCl:' + day);
+  if (CL[day]) drawClinic(CL[day]);
+  if (CL_ASKED[day]) return;
+  CL_ASKED[day] = true;
+  google.script.run.withSuccessHandler(function (c) {
+    CL[day] = c; if (c && !c.error) lsSet('chaoreumCl:' + day, c);
+    if ($('day').value === day) drawClinic(c);
+  }).withFailureHandler(function (e) {
+    CL_ASKED[day] = false;
+    if (!CL[day] && $('day').value === day) drawClinic({ error: (e && e.message) || '불러오지 못했어요' });
+  }).getClinicData(KEY, day);
 }
 
 // 바탕화면 '차오름 선생님' 아이콘으로 열면(주소에 from=app) 바탕화면 추가 안내를 숨기고, 이 휴대폰에서는 계속 숨긴다
